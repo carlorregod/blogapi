@@ -29,6 +29,12 @@ class Post extends Model
         return $this->hasMany('App\Comment');
     }
 
+    //Relación: Un post tiene varios comentarios
+    public function imagenes()
+    {
+        return $this->hasMany('App\Imagen');
+    }
+    
     
 
 }
