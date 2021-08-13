@@ -52,4 +52,10 @@ class User extends Authenticatable
         return $this->hasMany('App\Posts');
     }
 
+    //Relación tabla imágen polimórfica unica imagen
+    public function image()
+    {
+        return $this->morphOne(Imagen::class, 'imageable');
+    }
+
 }

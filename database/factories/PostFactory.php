@@ -4,12 +4,17 @@
 
 use App\Post;
 use Faker\Generator as Faker;
+use Illuminate\Support\Str;
 
 $factory->define(Post::class, function (Faker $faker) {
+    $name = $this->faker->unique()->word(20);
     return [
-        'name' => $faker->name,
-        'slug' => $faker->unique()->safeEmail,
-        'extract' => now(),
-        'body' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+        'name'=>$name,
+        'slug'=>Str::slug($name),
+        'extract'=>$this->faker->text(240),
+        'body'=>$this->faker->text(1000),
+        'status'=>$this->faker->randomElement(['App\Post'::BORRADOR,'App\Post'::PUBLICADO]),
+        'categoria_id'=>'App\Categoria'::all()->random()->id,
+        'user_id'=>'App\User'::all()->random()->id,
     ];
 });

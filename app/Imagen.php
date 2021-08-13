@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Imagen extends Model
 {
-    //Relación: Un post tiene varios comentarios
-    public function posts()
+    //Acá debe coincidir el nombre de la variable polimórfica 'imageable' en este caso
+    public function imageable()
     {
-        return $this->belongsTo('App\Post');
+        return $this->morphTo();
     }
 }

@@ -2,6 +2,9 @@
 
 use Illuminate\Database\Seeder;
 
+use Illuminate\Support\Facades\Storage;
+
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -11,12 +14,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call(CategoriaSeeder::class);
-        $this->call(CommentSeeder::class);
-        $this->call(PostSeeder::class);
-        $this->call(TagSeeder::class);
-        $this->call(ImagenSeeder::class);
+        Storage::deleteDirectory('posts'); //lo crea en storage/app/
+        Storage::makeDirectory('posts'); //lo crea en storage/app/
         //default
         $this->call(UserSeeder::class);
+        $this->call(CategoriaSeeder::class);
+        $this->call(TagSeeder::class);
+        $this->call(PostSeeder::class);
+        $this->call(CommentSeeder::class);
+        // $this->call(ImagenSeeder::class);
     }
 }

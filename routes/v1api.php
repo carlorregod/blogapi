@@ -22,4 +22,7 @@ Route::get('hello',function() {
     return 'hola';
 });
 
-Route::resource('user', 'APIs\AuthorizeController');
+Route::apiResource('user', 'APIs\AuthorizeController');
+// Categorias
+Route::apiResource('categoria', 'APIs\CategoriaController');
+

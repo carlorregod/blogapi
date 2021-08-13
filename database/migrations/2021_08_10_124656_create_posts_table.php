@@ -16,27 +16,31 @@ class CreatePostsTable extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->string('name', 50);
-            $table->string('slug', 50)->nullable();
-            $table->string('extract',80)->nullable();
-            $table->text('body')->nullable();
-            $table->boolean('status')->default(true);
+            $table->string('slug')->unique();
+            $table->text('extract')->nullable();
+            $table->longText('body')->nullable();
+            $table->enum('status',['App\Post'::BORRADOR,'App\Post'::PUBLICADO])->default('App\Post'::BORRADOR);
+            // $table->boolean('status')->default(true);
             $table->timestamps();
             //Relaciones post-categorias muchos-uno
-            $table->unsignedBigInteger('categoria_id');
-            $table->foreign('categoria_id')->references('id')->on('categorias');
+            /* $table->unsignedBigInteger('categoria_id');
+            $table->foreign('categoria_id')->references('id')->on('categorias'); */
+            $table->foreignId('categoria_id')->constrained()->onDelete('cascade');
             //Relaciones post-usuarios muchos-uno
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            /* $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users'); */
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
         });
 
         //Esquema relacionador
-        //Relaciones post-etiquetas muchos-muchos
+        //Relaciones post-tags muchos-muchos
         Schema::create('post_tag', function (Blueprint $table) {
             $table->unsignedBigInteger('tag_id');
             $table->unsignedBigInteger('post_id');
-            $table->foreign('tag_id')->references('id')->on('tags');
-            $table->foreign('post_id')->references('id')->on('users');
+            $table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade');
+            $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');
+            //Lo de cascade es oopcional!
         });
     }
 

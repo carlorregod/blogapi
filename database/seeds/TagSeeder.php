@@ -3,7 +3,7 @@
 use Illuminate\Database\Seeder;
 use App\Tag;
 
-class LabelSeeder extends Seeder
+class TagSeeder extends Seeder
 {
     /**
      * Run the database seeds.

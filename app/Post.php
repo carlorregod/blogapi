@@ -7,14 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
 
+    const BORRADOR = 1;
+    const PUBLICADO = 1;
 
     //Relaciones de la clase: un post tiene una categoria
-    public function categorias()
+    public function categoria()
     {
         return $this->belongsTo('App\Categoria');
     }
     //Relación: Un post le pertenece a un usuario
-    public function users()
+    public function user()
     {
         return $this->belongsTo('App\User');
     }
@@ -29,10 +31,10 @@ class Post extends Model
         return $this->hasMany('App\Comment');
     }
 
-    //Relación: Un post tiene varios comentarios
-    public function imagenes()
+    //Relación imagen polimórfica uno a muchos
+    public function images()
     {
-        return $this->hasMany('App\Imagen');
+        return $this->morphMany(Imagen::class, 'imageable');
     }
     
     
