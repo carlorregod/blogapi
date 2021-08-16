@@ -1,25 +1,12 @@
 <?php
 
-namespace App;
+namespace App\Traits;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
-//Paras los query scopes
+trait ApiTrait {
 
-use App\Traits\ApiTrait;
-
-class Categoria extends Model
-{
-    use ApiTrait;
-
-    protected $fillable = ['name','slug'];
-    public function posts()
-    {
-        return $this->hasMany('App\Post');
-    }
-    /* ------------------------------ query scopes ----------------------------- */
-    /* ------------- Se mudarán como trait por eso están comentadas ------------- */
-    /* // ?included=posts,posts.user,others
+    // ?included=posts,posts.user,others
     //Abrir ramas de consulta
     public function scopeIncluded(Builder $query) {
 
@@ -76,6 +63,8 @@ class Categoria extends Model
         return;
     }
 
+    //?perPage=3
+    //?perPage?&page=2
     //Scope paginador
     public function scopeGetOrPaginate(Builder $query) {
         if(!empty(request('perPage'))) {
@@ -89,5 +78,6 @@ class Categoria extends Model
 
 
     }
- */
+
+
 }

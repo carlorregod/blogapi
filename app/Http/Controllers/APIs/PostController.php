@@ -6,6 +6,9 @@ use App\Post;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+use App\Http\Resources\PostResource;
+use Illuminate\Support\Facades\Validator;
+
 class PostController extends Controller
 {
     /**
@@ -15,18 +18,11 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+        $posts = Post::included()->filter()->sort()->getOrPaginate();
+        // return $categories;
+        return PostResource::collection($posts); //Para una o varias respuestas
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -36,7 +32,21 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(),[
+            'name'=>'required|max:255',
+            'slug'=>'required|unique:posts|max:255',
+            'extract'=>'required|string',
+            'body'=>'required|string',
+            'categoria_id'=>'required|exists:categorias,id', # Que exista en tabla categirias, columna id
+            'user_id'=>'required|exists:users,id', # Que exista en tabla users, columna id
+        ]);
+
+        if(!$validator->fails()) {
+            Post::create($request->all());
+            return response()->json(['success'=>1,'error'=>''],201);
+        }
+
+        return response()->json(['success'=>0,'error'=>$validator->errors()],201);
     }
 
     /**
@@ -45,20 +55,9 @@ class PostController extends Controller
      * @param  \App\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function show(Post $post)
+    public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Post  $post
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Post $post)
-    {
-        //
+        return PostResource::make(Post::included()->sort()->findOrFail($id)); //Para una sola respuesta
     }
 
     /**
@@ -68,9 +67,27 @@ class PostController extends Controller
      * @param  \App\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Post $post)
+    public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(),[
+            'name'=>'required|max:255',
+            'slug'=>'required|unique:posts,slug,'.$id,
+            'extract'=>'required|string',
+            'body'=>'required|string',
+            'categoria_id'=>'required|exists:categorias,id', # Que exista en tabla categirias, columna id
+            'user_id'=>'required|exists:users,id', # Que exista en tabla users, columna id
+        ]);
+
+        if(!$validator->fails())
+        {
+            $register = Post::findOrFail($id);
+            $register->update($request->all());
+
+            return response()->json(['success'=>1,'error'=>''],200);
+        }
+
+        return response()->json(['success'=>0,'error'=>$validator->errors()],200);
+
     }
 
     /**
@@ -79,8 +96,15 @@ class PostController extends Controller
      * @param  \App\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Post $post)
+    public function destroy($id)
     {
-        //
+        $post = Post::find($id);
+        if(empty($post))
+            return response()->json(['success'=>0,'error'=>'Id no hallado'],200);
+        else {
+            $post->delete();
+            return response()->json(['success'=>1,'error'=>''],200);
+
+        }
     }
 }

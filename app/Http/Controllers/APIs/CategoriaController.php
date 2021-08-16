@@ -6,7 +6,8 @@ use App\Categoria;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-
+use App\Http\Resources\CategoriaResource;
+use Exception;
 class CategoriaController extends Controller
 {
     /**
@@ -16,8 +17,9 @@ class CategoriaController extends Controller
      */
     public function index()
     {
-        $categories = Categoria::filter()->sort()->get();
-        return $categories;
+        $categories = Categoria::included()->filter()->sort()->getOrPaginate();
+        // return $categories;
+        return CategoriaResource::collection($categories); //Para una o varias respuestas
     }
 
     /**
@@ -51,7 +53,7 @@ class CategoriaController extends Controller
         return $category->findOrFail($id); */
 
         //Uso de query scope included
-        return $category->included()->sort()->findOrFail($id);
+        return CategoriaResource::make($category->included()->sort()->findOrFail($id)); //Para una sola respuesta
 
         /* ------------------------------ forma fracaso ----------------------------- */
         // return $category; //NO me resulta de esta manera, en desuso
@@ -65,12 +67,16 @@ class CategoriaController extends Controller
      * @param  \App\Categoria  $categoria
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Categoria $categoria, $id)
+    public function update(Request $request, Categoria $categoria ,$id)
     {
-        $register = $categoria->findOrFail($id);
+        $request->validate([
+            'name'=>'required|max:255',
+            'slug'=>'required|unique:categorias,slug,'.$id,
+        ]);
+        $register = Categoria::findOrFail($id);
         $register->update($request->all());
 
-        return response()->json(['success'=>1,'error'=>'','data'=>$register],200);
+        return response()->json(['success'=>1,'error'=>''],200);
     }
 
     /**
@@ -81,12 +87,17 @@ class CategoriaController extends Controller
      */
     public function destroy(Categoria $categoria, $id)
     {
-        $categoria->destroy($id);
-        /* ------------------------------- Otra forma ------------------------------- */
-        /*
-        $categoria->findOrFail($id)->delete();
-        */
-        /* --------------------------------- retorno -------------------------------- */
-        return response()->json(['success'=>1,'error'=>''],200);
+        try {
+            $categoria->destroy($id);
+            /* ------------------------------- Otra forma ------------------------------- */
+            /*
+            $categoria->findOrFail($id)->delete();
+            */
+            /* --------------------------------- retorno -------------------------------- */
+            return response()->json(['success'=>1,'error'=>''],200);
+
+        } catch (Exception $e) {
+            return response()->json(['success'=>1,'error'=>$e->getMessage()],200);
+        }
     }
 }

@@ -4,11 +4,16 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Traits\ApiTrait;
+
 class Post extends Model
 {
+    use ApiTrait;
 
     const BORRADOR = 1;
     const PUBLICADO = 1;
+
+    protected $fillable = ['name','slug','extract','body','categoria_id','user_id'];
 
     //Relaciones de la clase: un post tiene una categoria
     public function categoria()
@@ -36,7 +41,7 @@ class Post extends Model
     {
         return $this->morphMany(Imagen::class, 'imageable');
     }
-    
-    
+
+
 
 }

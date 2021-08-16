@@ -25,4 +25,6 @@ Route::get('hello',function() {
 Route::apiResource('user', 'APIs\AuthorizeController');
 // Categorias
 Route::apiResource('categoria', 'APIs\CategoriaController');
+// Posts
+Route::apiResource('posts', 'APIs\PostController');
 

@@ -2,15 +2,17 @@
 
 namespace App;
 
+use App\Traits\ApiTrait;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 
 
+
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, ApiTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -40,7 +42,7 @@ class User extends Authenticatable
     ];
 
     //Hash de pw
-    public function setPasswordAttribute($pass) 
+    public function setPasswordAttribute($pass)
     {
         $this->attributes['password'] = Hash::make($pass);
     }
