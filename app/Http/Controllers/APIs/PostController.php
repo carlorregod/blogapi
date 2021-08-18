@@ -7,10 +7,16 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Http\Resources\PostResource;
+use Exception;
 use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
+
+    public function __construct() {
+        $this->middleware('auth:api')
+            ->except(['index','show']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -32,21 +38,23 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+        $user_id = auth()->user()->id;
         $validator = Validator::make($request->all(),[
             'name'=>'required|max:255',
             'slug'=>'required|unique:posts|max:255',
             'extract'=>'required|string',
             'body'=>'required|string',
             'categoria_id'=>'required|exists:categorias,id', # Que exista en tabla categirias, columna id
-            'user_id'=>'required|exists:users,id', # Que exista en tabla users, columna id
+            // 'user_id'=>'required|exists:users,id', # Que exista en tabla users, columna id
         ]);
 
         if(!$validator->fails()) {
+            $request->user_id = $user_id;
             Post::create($request->all());
-            return response()->json(['success'=>1,'error'=>''],201);
+            return response()->json(['success'=>1,'message'=>''],201);
         }
 
-        return response()->json(['success'=>0,'error'=>$validator->errors()],201);
+        return response()->json(['success'=>0,'message'=>$validator->errors()],201);
     }
 
     /**
@@ -69,24 +77,27 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
+        auth()->user();
         $validator = Validator::make($request->all(),[
             'name'=>'required|max:255',
             'slug'=>'required|unique:posts,slug,'.$id,
             'extract'=>'required|string',
             'body'=>'required|string',
             'categoria_id'=>'required|exists:categorias,id', # Que exista en tabla categirias, columna id
-            'user_id'=>'required|exists:users,id', # Que exista en tabla users, columna id
+            // 'user_id'=>'required|exists:users,id', # Que exista en tabla users, columna id
         ]);
+
+        // $request->id = $user_id;
 
         if(!$validator->fails())
         {
             $register = Post::findOrFail($id);
             $register->update($request->all());
 
-            return response()->json(['success'=>1,'error'=>''],200);
+            return response()->json(['success'=>1,'message'=>''],200);
         }
 
-        return response()->json(['success'=>0,'error'=>$validator->errors()],200);
+        return response()->json(['success'=>0,'message'=>$validator->errors()],200);
 
     }
 
@@ -98,12 +109,17 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
+        auth()->user();
         $post = Post::find($id);
         if(empty($post))
-            return response()->json(['success'=>0,'error'=>'Id no hallado'],200);
+            return response()->json(['success'=>0,'message'=>'Id no hallado'],200);
         else {
-            $post->delete();
-            return response()->json(['success'=>1,'error'=>''],200);
+            try {
+                $post->delete();
+                return response()->json(['success'=>1,'message'=>''],200);
+            } catch (Exception $e) {
+                return response()->json(['success'=>0,'message'=>$e->getMessage()],200);
+            }
 
         }
     }

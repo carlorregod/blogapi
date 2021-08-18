@@ -30,12 +30,15 @@ class CategoriaController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'name'=>'required|max:255',
             'slug'=>'required|unique:categorias|max:255'
         ]);
 
-        Categoria::create($request->all());
+        // dd($data);
+
+        // Categoria::create($request->all());
+        Categoria::create($data);
 
         return response()->json(['success'=>1,'error'=>''],201);
     }
@@ -74,6 +77,8 @@ class CategoriaController extends Controller
             'slug'=>'required|unique:categorias,slug,'.$id,
         ]);
         $register = Categoria::findOrFail($id);
+
+        //Para el caso, $request->all() equivale a la respuesta de $request->validate([...])
         $register->update($request->all());
 
         return response()->json(['success'=>1,'error'=>''],200);
