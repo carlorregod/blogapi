@@ -7,15 +7,33 @@
 
 ### Instrucciones
 1) composer install
-2) php artisan key:generate
-3) Cree su archivo .env y en el apartado de database, elegir motor sqlite
-4) php artisan passport:keys
+2) Cree su archivo .env y en el apartado de database, elegir motor sqlite2. ya viene pre-configurado para aceptar redis, si se usa. la idea es que quede de esta manera (si no existe la opción, favor generarlas)
 
+> DB_CONNECTION=sqlite2 
+> 
+> FILESYSTEM_DRIVER=public
+>
 
-Data temp
-Personal access client created successfully.
-Client ID: 942f2e3a-5055-44fd-a347-3b8106f48bbb
-Client secret: 8Efo5a5vUfkz9ID7crx3e80l8qeuxvmk5YwGWtfm
+3) php artisan passport:keys
+
+Si desea rehacer la database puede hacer la siguiente migración
+
+4) php artisan migrate
+5) php artisan passport:install --uuids
+6) php artisan migrate:fresh --seed 
+7) php artisan passport:install --uuids
+
+Este último comando hará que se refresquen las migraciones. Estos comandos siguientes son obligatorios
+
+8) php artisan key:generate
+9) php artisan config:cache
+
+### Datos para probar 
+* Creando un cliente
+> php artisan passport:client --password
 Password grant client created successfully.
-Client ID: 942f2e3a-5a25-4200-a14a-101bf6e66e79
-Client secret: z0UO0cHdj77kzUXSf2LsFVlFywIG86hhKY6ahDfF
+Client ID: 9431b7a2-1c88-4c81-983a-46104215441e
+Client secret: 8OSA4ULJgrAWjI0YgBJNSuXUndt6kszhkfYhSqCd
+
+
+

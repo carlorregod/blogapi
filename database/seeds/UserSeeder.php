@@ -17,7 +17,8 @@ class UserSeeder extends Seeder
         User::create([
             'name'=>'Carlos',
             'email'=>'carlos.orrego@diaz.com',
-            'password'=>bcrypt('2004330')
+            // 'password'=>bcrypt('2004330')
+            'password'=>'2004330'
         ]);
         factory(Imagen::class,1)->create([
             'imageable_id'=>1,
